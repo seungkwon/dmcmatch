@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//ibatis.apache.org//DTD Config 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="cacheEnabled" value="false" />
+		<setting name="localCacheScope" value="STATEMENT" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias type="java.util.Map" alias="Map" />
+		<typeAlias type="java.util.HashMap" alias="HashMap" />
+		<typeAlias type="java.util.List" alias="List" />
+		<typeAlias type="java.lang.String" alias="String" />
+		<typeAlias type="java.lang.Integer" alias="Integer" />
+		<typeAlias type="java.lang.Long" alias="Long" />
+		<typeAlias type="java.util.Date" alias="Date" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="META-INF/sqlmap/CommonCode.xml"/>
+		<mapper resource="META-INF/sqlmap/FileUpload.xml"/>
+		<mapper resource="META-INF/sqlmap/FileDownload.xml"/>
+		<mapper resource="META-INF/sqlmap/LOGIN.xml"/>
+		<mapper resource="META-INF/sqlmap/Mission.xml"/>
+		<mapper resource="META-INF/sqlmap/CustCenter.xml"/>
+		<mapper resource="META-INF/sqlmap/StarMgmt.xml"/>
+		<mapper resource="META-INF/sqlmap/Product.xml"/>
+		<mapper resource="META-INF/sqlmap/Banner.xml"/>
+		<mapper resource="META-INF/sqlmap/SysAccount.xml" />
+	</mappers>
+	
+</configuration>
