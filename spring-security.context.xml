@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <http auto-config='true' use-expressions="true">
+        <access-denied-handler error-page="/error/accessDenied.htm" />
+        <headers>
+            <frame-options disabled="true"/>
+        </headers>
+        <!--
+        INQRY - 조회
+        REG - 등록
+        UPT - 수정
+        DEL - 삭제
+        SAV - 저장(엑셀 다운로드)
+        DP - 출력
+        -->
+        <!--
+            # access type 1
+            permitAll : 모든 접근자를 항상 승인합니다.
+            denyAll : 모든 사용자의 접근을 거부합니다.
+            anonymous : 사용자가 익명 사용자인지 확인합니다.
+            authenticated : 인증된 사용자인지 확인합니다.
+            rememberMe : 사용자가 remember me를 사용해 인증했는지 확인합니다.
+            fullyAuthenticated : 사용자가 모든 크리덴셜을 갖춘 상태에서 인증했는지 확인합니다.
+       
+            # access type 2
+            hasIpAddress(ip) : 접근자의 IP주소가 매칭하는지 확인합니다.
+            hasRole(role) : 역할이 부여된 권한(Granted Authority)와 일치하는지 확인합니다.
+            hasAnyRole(role) : 부여된 역할 중 일치하는 항목이 있는지 확인합니다.
+                             예 - access = "hasAnyRole('ROLE_USER','ROLE_ADMIN')"
+        -->
+        <intercept-url pattern="/member/login/**" 				access="permitAll" />
+        
+        <intercept-url pattern="/"                                        access="authenticated"/>
+        <intercept-url pattern="/index.do"                             access="authenticated"/>
+        <intercept-url pattern="/index.jsp"  	                        access="permitAll" />   
+        <intercept-url pattern="/error/**"  		                        access="permitAll" />
+        <intercept-url pattern="/dmcmatch/portal/**"  		    access="permitAll" />
+        <intercept-url pattern="/dmcmatch/manage/**"  		access="authenticated" />
+		<    
+        <intercept-url pattern="/favicon.ico"  access="permitAll" />
+        <intercept-url pattern="/css/**"  		access="permitAll" />
+        <intercept-url pattern="/fonts/**"  	access="permitAll" />
+        <intercept-url pattern="/images/**"  	access="permitAll" />
+        <intercept-url pattern="/image/**"  	access="permitAll" />
+        <intercept-url pattern="/img/**"  		access="permitAll" />
+        <intercept-url pattern="/js/**"  			access="permitAll" />
+        <intercept-url pattern="/plugins/**"  	access="permitAll" />
+
+
+        <csrf disabled="true"/>
+
+        <form-login
+            login-page="/common/member/login/login.do"
+            username-parameter="usrId"
+            password-parameter="password"
+            login-processing-url="/common/member/login/loginProcess.do"
+            default-target-url="/index.do"
+            authentication-success-handler-ref="loginSuccessHandler"
+            authentication-failure-handler-ref="loginFailureHandler"
+            always-use-default-target='true'
+        />
+
+		<logout
+		logout-url="/common/member/login/logout.do" 
+		invalidate-session="true"
+            delete-cookies="SESSION"
+            logout-success-url="/common/member/login/login.do"/>
+
+
+		<!-- 앱/웹 구분 필터 -->
+	
+        
+        <session-management session-fixation-protection="changeSessionId">
+            <!--
+            error-if-maximum-exceeded : max-sesstions 다음 로그인 사용자 차단
+            expired-url : 중복로그인이 일어났을 경우 이동할 페이지
+            error-if-maximum-exceeded true/false 트루면 기존 로그인 된사람이 계속 사용
+        	false이면 두번쨰로 로그인 하는 사람이 로그인 됨
+             -->
+
+            <!--   *** 19.02.01 이중로그인 조치 *** -->
+            <concurrency-control max-sessions="1" expired-url="/common/member/login/login.do?flag=1" error-if-maximum-exceeded="false" />
+
+        </session-management>
+
+		<custom-filter before="FORM_LOGIN_FILTER" ref="requestContextFilter"/>
+
+    </http>
+
+
+
+	<beans:bean id="requestContextFilter" class="org.springframework.web.filter.RequestContextFilter"></beans:bean>
+	<beans:bean id="jspFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter"></beans:bean> -->
+    
+    <!--
+    <beans:bean id="ajaxSessionExpiredFilter" class="com.shilladfs.tgs.front.common.filter.AjaxSessionExpiredFilter">
+    </beans:bean>
+    -->
+
+    <beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+
+
+	<!-- password encoder algorithm -->
+	<!-- 
+	<beans:bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder" />
+	<beans:bean class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" id="shaPasswordEncoder">
+		<beans:constructor-arg name="strength" value="256" />
+		<beans:property name="encodeHashAsBase64"  value="true" />
+	</beans:bean>
+	-->
+
+ 
+    <!--  provider  -->
+    <authentication-manager>
+        <authentication-provider ref="customAuthenticationProvider"/>
+    </authentication-manager>
+
+    <!-- 로그인 실패시 핸들러 -->
+    <beans:bean id="loginFailureHandler" class="dmcmatch.common.member.service.LoginFailureHandler" />
+
+    <!-- 로그인 성공시 핸들러 -->
+    <beans:bean id="loginSuccessHandler" class="dmcmatch.common.member.service.LoginSuccessHandler" />
+
+    <beans:bean id="customAuthenticationProvider" class="dmcmatch.common.member.service.CustomAuthenticationProvider"/>
+
+</beans:beans>
